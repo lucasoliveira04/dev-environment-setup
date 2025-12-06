@@ -71,8 +71,51 @@ services:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
 
+  mysql:
+    image: mysql:8
+    container_name: mysql8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+
 volumes:
   postgres_data:
   pgadmin_data:
   grafana_data:
   jenkins_home:
+  mysql_data:
+  redis_data:
