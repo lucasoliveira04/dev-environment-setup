@@ -24,7 +24,6 @@ try {
 $foundConfig = $false
 foreach ($path in $codePaths) {
     if (Test-Path $path) {
-        "`nArquivo encontrado: $path" | Out-File $outFile -Append
         Get-Content $path | Out-File $outFile -Append
         $foundConfig = $true
     }
@@ -33,8 +32,6 @@ foreach ($path in $codePaths) {
 if (-not $foundConfig) {
     "`nNenhum settings.json encontrado." | Out-File $outFile -Append
 }
-
-Write-Host "Arquivo gerado em: $outFile" -ForegroundColor Green
 
 $bucketPath = "backups/$dateStr/$([System.IO.Path]::GetFileName($outFile))"
 

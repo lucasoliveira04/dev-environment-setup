@@ -1,16 +1,31 @@
 $awsPath = "C:\Program Files\Amazon\AWSCLIV2\aws.exe"
-
 $bucketName = "ambient-pc-bucket"
-$s3FileName = "vscode-info.txt"
-
-$localBackup = "$env:USERPROFILE\Desktop\$s3FileName"
 
 $settingsPath = "$env:APPDATA\Code\User\settings.json"
 
+Write-Host "Listando backups disponíveis no S3..."
+
+$filesJson = & "$awsPath" s3api list-objects-v2 `
+    --bucket $bucketName `
+    --prefix "backups/" `
+    --query 'Contents[].{Key: Key, LastModified: LastModified}' `
+    --output json | ConvertFrom-Json
+
+if ($filesJson.Count -eq 0) {
+    Write-Host "Nenhum arquivo encontrado no bucket!" -ForegroundColor Red
+    exit
+}
+
+$latestFile = $filesJson | Sort-Object {[datetime]$_.LastModified} -Descending | Select-Object -First 1
+$latestKey = $latestFile.Key
+
+$localBackup = "$env:USERPROFILE\Desktop\$([System.IO.Path]::GetFileName($latestKey))"
+
+Write-Host "Baixando backup mais recente: $latestKey"
+
 try {
-    Write-Host "Baixando backup do S3..."
-    & "$awsPath" s3 cp "s3://$bucketName/$s3FileName" "$localBackup"
-    Write-Host "Backup baixado: $localBackup" -ForegroundColor Green
+    & "$awsPath" s3 cp "s3://$bucketName/$latestKey" "$localBackup"
+    Write-Host "Backup baixado em: $localBackup" -ForegroundColor Green
 } catch {
     Write-Host "Erro ao baixar backup: $_" -ForegroundColor Red
     exit
