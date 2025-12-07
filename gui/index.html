@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuração de Ambiente</title>
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <style>
+    .card-hover:hover {
+      transform: scale(1.05);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-5">Configuração do Ambiente</h1>
+
+    <div class="row" id="sections-container">
+    
+    </div>
+  </div>
+
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const sections = [
+      { name: 'Bancos de Dados', description: 'Configure seus bancos de dados', href: 'pages/db/db-page.html' },
+      { name: 'Linguagens', description: 'Configure Java, Python, Node.js etc.', href: 'pages/languages/languages.html' },
+      { name: 'Ferramentas', description: 'Configure Jenkins, Grafana, RedisInsight etc.', href: 'pages/tools/tools.html' }
+    ];
+
+    const container = document.getElementById('sections-container');
+
+    sections.forEach(section => {
+      const col = document.createElement('div');
+      col.classList.add('col-md-4', 'mb-4');
+
+      const card = document.createElement('div');
+      card.classList.add('card', 'h-100', 'card-hover');
+
+      const cardBody = document.createElement('div');
+      cardBody.classList.add('card-body', 'd-flex', 'flex-column', 'justify-content-between');
+
+      const title = document.createElement('h5');
+      title.classList.add('card-title');
+      title.textContent = section.name;
+
+      const desc = document.createElement('p');
+      desc.classList.add('card-text');
+      desc.textContent = section.description;
+
+      cardBody.appendChild(title);
+      cardBody.appendChild(desc);
+      card.appendChild(cardBody);
+      col.appendChild(card);
+
+      card.addEventListener('click', () => {
+        window.location.href = section.href;
+      });
+
+      container.appendChild(col);
+    });
+  </script>
+</body>
+</html>
